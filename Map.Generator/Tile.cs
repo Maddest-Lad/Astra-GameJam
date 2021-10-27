@@ -2,8 +2,8 @@
 {
     public struct Tile
     {
-        TileType Type;
-        bool Locked;
+        private TileType Type;
+        private bool Locked;
 
         public Tile(TileType type, bool locked)
         {
@@ -15,6 +15,11 @@
         {
             Type = type;
             Locked = false;
+        }
+
+        public override string ToString()
+        {
+            return "" + (int) Type;
         }
     }
 }

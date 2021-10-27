@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,10 +13,11 @@ namespace Map.Generator
 
         [Range(1, 200)] public int height = 100;
 
-        private void run()
+        private void start()
         {
             var rooms = GenerateRooms();
             var tiles = RoomsToTilemap(rooms);
+            Utils.Print2DArray(tiles);
         }
 
         private IEnumerable<Room> GenerateRooms()
@@ -51,7 +53,8 @@ namespace Map.Generator
         private Tile[,] RoomsToTilemap(IEnumerable<Room> rooms)
         {
             var tileMap = new Tile[width, height];
-
+            Utils.Fill2DArray(tileMap, new Tile(TileType.Empty));
+            
             foreach (var room in rooms)
                 for (var x = room.left; x < room.right; x++)
                     for (var y = room.top; y < room.bottom; y++)
