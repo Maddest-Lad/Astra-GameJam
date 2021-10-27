@@ -2,13 +2,13 @@
 
 namespace Map.Generator
 {
-    internal class Room
+    class Room
     {
         private static Random random = new Random();
-        private int left;
-        private int right;
-        private int top;
-        private int bottom;
+        public int left;
+        public int right;
+        public int top;
+        public int bottom;
 
         public Room(int left, int right, int top, int bottom)
         {
@@ -16,6 +16,12 @@ namespace Map.Generator
             this.right = right;
             this.top = top;
             this.bottom = bottom;
+        }
+
+        // Determine if a point is inside the room
+        public bool isBorderTile(int x, int y)
+        {
+            return (x == left || x == right || y == top || y == bottom);
         }
 
         public static (Room, Room) SplitRoom(Room room)
