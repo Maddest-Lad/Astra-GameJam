@@ -7,20 +7,13 @@ namespace Map.Generator
 {
     public class Generate : MonoBehaviour
     {
-        [Range(1, 10)] public int numIterations = 5;
-
-        [Range(1, 200)] public int width = 100;
-
-        [Range(1, 200)] public int height = 100;
-
-        private void start()
+        public static Tile[,] GenerateMap(int width, int height, int numIterations)
         {
-            var rooms = GenerateRooms();
-            var tiles = RoomsToTilemap(rooms);
-            Utils.Print2DArray(tiles);
+            var rooms = GenerateRooms(width, height, numIterations);
+            return RoomsToTilemap(rooms, width, height);
         }
 
-        private IEnumerable<Room> GenerateRooms()
+        private static IEnumerable<Room> GenerateRooms(int width, int height, int numIterations)
         {
             // Top Left is (0,0) Bottom Right is (Width, Height)
             var gameMap = new Room(0, width, 0, height);
@@ -37,28 +30,52 @@ namespace Map.Generator
                 while (leafNodes.Count > 0)
                 {
                     var current = leafNodes.Dequeue();
-                    var (r1, r2) = Room.SplitRoom(current);
+                    var (r1, r2) = Room.AlternateSplitRoom(current);
                     nextLevel.Add(r1);
                     nextLevel.Add(r2);
                 }
 
                 // Add Next Level to the (now empty) Leaf Nodes
-                foreach (var room in nextLevel) leafNodes.Enqueue(room);
+                foreach (var room in nextLevel) { 
+                    leafNodes.Enqueue(room);
+                }
+                
+            }
+            
+            // Randomly Remove 40% Of the Items in leafNodes
+            var randomRooms = leafNodes.ToList();
+            var random = new System.Random();
+            var numToRemove = (int) (randomRooms.Count * 0.4);
+            for (var i = 0; i < numToRemove; i++)
+            {
+                var index = random.Next(randomRooms.Count);
+                randomRooms.RemoveAt(index);
             }
 
-            return leafNodes.ToList();
+            return randomRooms; 
         }
 
         // For Now Fairly Simple - Just Iterating Through Each Room and Mapping It's Tiles to the Tile[][] map
-        private Tile[,] RoomsToTilemap(IEnumerable<Room> rooms)
+        private static Tile[,] RoomsToTilemap(IEnumerable<Room> rooms, int width, int height)
         {
             var tileMap = new Tile[width, height];
             Utils.Fill2DArray(tileMap, new Tile(TileType.Empty));
             
+            // For Each Room, Iterate Through Each Tile and Set the Tile Type
             foreach (var room in rooms)
-                for (var x = room.left; x < room.right; x++)
-                    for (var y = room.top; y < room.bottom; y++)
-                        tileMap[x, y] = new Tile(room.isBorderTile(x, y) ? TileType.Wall : TileType.Floor);
+            {
+                for(var i = room.inside.left; i < room.inside.right; i++)
+                {
+                    for(var j = room.inside.top; j < room.inside.bottom; j++)
+                    {
+                        if(room.isBorderTile(i, j)) {
+                            tileMap[i, j] = new Tile(TileType.Wall);
+                        } else {
+                            tileMap[i, j] = new Tile(TileType.Floor);
+                        }
+                    }
+                }
+            }
             return tileMap;
         }
     }

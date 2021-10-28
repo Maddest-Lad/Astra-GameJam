@@ -1,50 +1,85 @@
 ﻿using System;
+using System.Diagnostics;
+using Random = UnityEngine.Random;
 
 namespace Map.Generator
 {
-    class Room
+    internal class Room
     {
-        private static Random random = new Random();
-        public int left;
-        public int right;
-        public int top;
-        public int bottom;
-
-        public Room(int left, int right, int top, int bottom)
+        private static float RATIO = 0.45f;
+        public readonly int bottom;
+        public readonly int left;
+        public readonly int right;
+        public readonly int top; 
+        public Room inside;
+        private bool isInside;
+        
+        public Room(int left, int right, int top, int bottom, bool genInside=false)
         {
             this.left = left;
             this.right = right;
             this.top = top;
             this.bottom = bottom;
+
+            // Generate Interior Room
+            if (genInside)
+            {
+                int offset = Random.Range(2, 5);
+                inside = new Room(left + offset, right - offset, top + offset, bottom - offset);
+            }
         }
 
         // Determine if a point is inside the room
         public bool isBorderTile(int x, int y)
         {
-            return (x == left || x == right || y == top || y == bottom);
+            return x == inside.left || x == inside.right - 1 || y == inside.top || y == inside.bottom - 1;
         }
 
-        public static (Room, Room) SplitRoom(Room room)
+        public static (Room, Room) AlternateSplitRoom(Room room)
         {
-            var direction = (Direction) random.Next(0, 1); //TODO Verify that this works
-            int length, middle;
-            
-            // Generate Random Middle Between 80% and 120% of the length (ie Generally Middle)
-            switch (direction)
+            while (true)
             {
-                case Direction.HORIZONTAL:
-                    length = Math.Abs(room.top - room.bottom);
-                    middle = random.Next((int) ((length / 2) * 0.8f), (int) ((length / 2) * 1.2));
-                    return (new Room(room.left, room.right, room.top, middle), new Room(room.left, room.right, middle, room.bottom));
+                int mid;
+                float r1, r2;
+                Room left, right;
 
-                case Direction.VERTICAL:
-                    length = Math.Abs(room.left - room.right);
-                    middle = random.Next((int) ((length / 2) * 0.8f), (int) ((length / 2) * 1.2));
-                    return (new Room(middle, room.right, room.top, room.bottom), new Room(room.left, middle, room.top, room.bottom));
+                // Split the Containers
+                switch (Utils.getRandomDirection())
+                {
+                    case Direction.HORIZONTAL:
+                        mid = Random.Range(room.left, room.right);
+                        r1 = Math.Abs((float) (room.left - mid) / (float) (room.top - room.bottom));
+                        r2 = Math.Abs((float) (room.right - mid) / (float) (room.top - room.bottom));
 
-                default:
-                    throw new Exception("Invalid Direction");
+                        left = new Room(room.left, mid, room.top, room.bottom, true);
+                        right = new Room(mid, room.right, room.top, room.bottom, true);
+                        break;
+
+                    case Direction.VERTICAL:
+                        mid = Random.Range(room.bottom, room.top);
+                        r1 = Math.Abs((float) (room.top - mid) / (room.left - room.right));
+                        r2 = Math.Abs((float) (room.bottom - mid) / (room.left - room.right));
+
+                        left = new Room(room.left, room.right, room.top, mid, true);
+                        right = new Room(room.left, room.right, mid, room.bottom, true);
+                        break;
+
+                    default:
+                        return (null, null);
+                }
+
+                if (r1 < RATIO || r2 < RATIO)
+                {
+                    continue;
+                }
+
+                return (left, right);
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{left}, {right}, {top}, {bottom}";
         }
     }
 }

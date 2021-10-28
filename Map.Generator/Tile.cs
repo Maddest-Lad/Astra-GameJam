@@ -2,8 +2,8 @@
 {
     public struct Tile
     {
-        private TileType Type;
-        private bool Locked;
+        public TileType Type;
+        public bool Locked;
 
         public Tile(TileType type, bool locked)
         {

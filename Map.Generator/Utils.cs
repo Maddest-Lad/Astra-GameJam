@@ -31,5 +31,10 @@ namespace Map.Generator
                 Console.WriteLine();
             }
         }
+        
+        public static Direction getRandomDirection()
+        {
+            return (Direction)UnityEngine.Random.Range(0, 2);
+        }
     }
 }
