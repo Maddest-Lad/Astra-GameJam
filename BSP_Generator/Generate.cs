@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using BSP_Generator;
 using UnityEngine;
 
-namespace Map.Generator
+namespace BSP_Generator
 {
     public class Generate : MonoBehaviour
     {
@@ -42,17 +42,17 @@ namespace Map.Generator
                 
             }
             
-            // Randomly Remove 40% Of the Items in leafNodes
-            var randomRooms = leafNodes.ToList();
-            var random = new System.Random();
-            var numToRemove = (int) (randomRooms.Count * 0.4);
-            for (var i = 0; i < numToRemove; i++)
-            {
-                var index = random.Next(randomRooms.Count);
-                randomRooms.RemoveAt(index);
-            }
+            // // Randomly Remove 40% Of the Items in leafNodes
+            // var randomRooms = 
+            // var random = new System.Random();
+            // var numToRemove = (int) (randomRooms.Count * 0.4);
+            // for (var i = 0; i < numToRemove; i++)
+            // {
+            //     var index = random.Next(randomRooms.Count);
+            //     randomRooms.RemoveAt(index);
+            // }
 
-            return randomRooms; 
+            return leafNodes.ToList();; 
         }
 
         // For Now Fairly Simple - Just Iterating Through Each Room and Mapping It's Tiles to the Tile[][] map

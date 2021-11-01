@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Map.Generator
+namespace BSP_Generator 
 {
     public static class Utils
     {

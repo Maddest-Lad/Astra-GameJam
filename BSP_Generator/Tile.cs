@@ -1,4 +1,4 @@
-﻿namespace Map.Generator
+﻿namespace BSP_Generator
 {
     public struct Tile
     {

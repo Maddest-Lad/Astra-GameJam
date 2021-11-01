@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Random = UnityEngine.Random;
 
-namespace Map.Generator
+namespace BSP_Generator
 {
     internal class Room
     {
@@ -24,7 +24,7 @@ namespace Map.Generator
             // Generate Interior Room
             if (genInside)
             {
-                int offset = Random.Range(2, 5);
+                int offset = Random.Range(3, 6);
                 inside = new Room(left + offset, right - offset, top + offset, bottom - offset);
             }
         }

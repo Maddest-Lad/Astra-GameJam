@@ -1,8 +1,8 @@
 ﻿using System;
+using BSP_Generator;
 using UnityEngine;
-using Map.Generator;
 
-namespace Map.Builder
+namespace BSP_Generator
 {
     public class Builder : MonoBehaviour
     {
